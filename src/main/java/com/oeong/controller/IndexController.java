@@ -8,6 +8,6 @@ public class IndexController {
 
     @GetMapping("/index")
     public String toLogin() {
-        return "user/login";
+        return "/user/login";
     }
 }

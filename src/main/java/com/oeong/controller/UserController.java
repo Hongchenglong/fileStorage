@@ -23,6 +23,30 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    // 前往注册
+    @GetMapping("/toRegister")
+    public String toRegister() {
+        return "user/register";
+    }
+
+    // 注册方法
+    @PostMapping("/register")
+    public String register(User user, Model model) {
+        try {
+            userService.register(user);
+            model.addAttribute("msg", "注册成功，请登录");
+            return "/user/register";
+        } catch (Exception e) {
+            model.addAttribute("msg", "注册失败");
+            return "/user/register";
+        }
+    }
+
+    // 前往登录
+    @GetMapping("/toLogin")
+    public String toLogin() {
+        return "/user/login";
+    }
 
     // 登录方法
     @PostMapping("/login")
@@ -40,10 +64,10 @@ public class UserController {
             return "redirect:/file/index";
         } catch (UnknownAccountException e) {
             model.addAttribute("msg", "用户名或密码错误");
-            return "user/login";
+            return "/user/login";
         } catch (IncorrectCredentialsException e) {
             model.addAttribute("msg", "用户名或密码错误");
-            return "user/login";
+            return "/user/login";
         }
     }
 

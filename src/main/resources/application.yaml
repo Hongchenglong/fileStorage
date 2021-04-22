@@ -11,15 +11,15 @@ spring:
     password: root
 
 server:
-  port: 8080
+  port: 8181
   servlet:
     context-path: /fileStorage
 
 mybatis:
   mapper-locations: classpath:mybatis/mapper/*.xml
-  type-aliases-package: com.yhao.fileStorage.entity
+  type-aliases-package: com.oeong.entity
 
 logging:
   level:
     root: info
-    com.yhao.fileServer: debug
+    com.oeong.dao: debug

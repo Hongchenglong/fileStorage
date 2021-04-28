@@ -12,12 +12,12 @@
     <nav class="layui-nav">
         <div class="layui-nav-item">
             <p class="layui-nav-title" style="font-size: larger">
-<!--                欢迎：<span th:if="${session.user!=null}" th:text="${session.user.username}"/>-->
+                欢迎：<span th:if="${session.user!=null}" th:text="${session.user.username}"/>
             </p>
         </div>
         <div class="layui-nav-item" style="float: right;">
             <button class="layui-btn">
-<!--                <a th:href="@{/user/logout}" style="font-size: larger; padding: 0px; color: white">login out</a>-->
+                <a th:href="@{/user/logout}" style="font-size: larger; padding: 0px; color: white">login out</a>
             </button>
         </div>
         <div class="layui-nav-item" style="float: right; padding-right: 20px">
@@ -41,9 +41,9 @@
 <script th:inline="none">
     layui.use(['upload', 'table'], function () {
         var $ = layui.jquery,
-            upload = layui.upload,
-            table = layui.table;
-
+            table = layui.table,
+            upload = layui.upload;
+        // 表格
         table.render({
             elem: '#fileList',
             height: 640,
@@ -72,5 +72,23 @@
                 {title: '操作', align: 'center', toolbar: '#optBar', width: 200, fixed: 'right'}
             ]]
         })
+        // 图片上传
+        upload.render({
+            elem: '#fileUpload',
+            url: '/fileStorage/file/upload',
+            accept: 'file',
+            done: function (res) {
+                layer.msg(res.msg);
+                if (res.code == 0) {
+                    setTimeout(function () {
+                        // 当前页面打开URL
+                        window.location.href = res.url;
+                    }, 2000);
+                } else {
+                    layer.alert("上传失败");
+                }
+            }
+        });
+
     })
 </script>

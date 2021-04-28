@@ -71,4 +71,13 @@ public class UserController {
         }
     }
 
+    // 注销方法
+    @GetMapping("/logout")
+    public String logout() {
+        // 获取当前用户
+        Subject subject = SecurityUtils.getSubject();
+        subject.logout();
+        return "redirect:/index";
+    }
+
 }

@@ -15,11 +15,11 @@
     <select id="queryByUserId" parameterType="Integer" resultMap="UserFileMap">
         select * from t_files where user_id=#{id} order by id limit #{begin}, #{offset};
     </select>
-<!--    &lt;!&ndash;根据UserFileId查询文件信息&ndash;&gt;-->
-<!--    <select id="queryByUserFileId" parameterType="Integer" resultMap="UserFileMap">-->
-<!--        select * from t_files where user_id=#{id};-->
-<!--    </select>-->
-<!--    &lt;!&ndash;保存新上传的文件&ndash;&gt;-->
+    <!--根据UserFileId查询文件信息-->
+    <select id="queryByUserFileId" parameterType="Integer" resultMap="UserFileMap">
+        select * from t_files where id=#{id};
+    </select>
+    <!--保存新上传的文件-->
     <insert id="save" parameterType="UserFile" useGeneratedKeys="true" keyProperty="id">
         insert into t_files(file_name, ext, path, size, type, download_counts, upload_time, user_id)
         VALUES (#{fileName},#{ext},#{path},#{size},#{type},#{downloadCounts},#{uploadTime},#{userId});

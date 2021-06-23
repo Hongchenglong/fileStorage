@@ -11,7 +11,6 @@ import java.util.Date;
 @Data  // @Data : 注解在类上, 为类提供读写属性（提供get/set方法）, 此外还提供了 equals()、hashCode()、toString() 方法
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString // 重写toString
 @Accessors(chain = true) // 链式访问
 public class UserFile {
     private Integer id;

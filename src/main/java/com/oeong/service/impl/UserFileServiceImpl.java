@@ -26,7 +26,7 @@ public class UserFileServiceImpl implements UserFileService {
 
     @Override
     public UserFile queryByUserFileId(Integer id) {
-        return null;
+        return userFileDao.queryByUserFileId(id);
     }
 
     @Override

@@ -4,16 +4,19 @@ import com.oeong.entity.User;
 import com.oeong.entity.UserFile;
 import com.oeong.service.UserFileService;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.ResourceUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
+import java.net.URLEncoder;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -33,8 +36,8 @@ public class FileController {
         return "file/list";
     }
 
-    @PostMapping("/all")
     @ResponseBody
+    @PostMapping("/all")
     public Map<String, Object> queryAllFile(HttpSession session, HttpServletRequest request) {
         int page = Integer.parseInt(request.getParameter("page"));
         int limit = Integer.parseInt(request.getParameter("limit"));
@@ -97,5 +100,60 @@ public class FileController {
         return res;
     }
 
+    /**
+     * @Author: Hongchenglong
+     * @Date: 2021/6/23 14:01
+     * @param id : 文件id
+     * @param response :
+     * @Decription: 文件下载
+     */
+    @GetMapping("/download/{id}")
+    public void download(@PathVariable("id") Integer id, HttpServletResponse response) {
+        String openStyle = "attachment";
+        System.out.println("trigger download");
+        getFile(openStyle, id, response);
+    }
 
+    /**
+     * @Author: Hongchenglong
+     * @Date: 2021/6/23 14:05
+     * @param id:
+     * @param response:
+     * @Decription: 文件预览
+     */
+    @GetMapping("/preview/{id}")
+    public void preview(@PathVariable("id") Integer id, HttpServletResponse response) {
+        String openStyle = "inline";
+        System.out.println("trigger download");
+        getFile(openStyle, id, response);
+    }
+
+    public void getFile(String openStyle, Integer id, HttpServletResponse response) {
+        UserFile file = userFileService.queryByUserFileId(id);
+        try {
+            // 文件路径
+            System.out.println("realPath: ");
+            String realPath = ResourceUtils.getURL("classpath:").getPath() + file.getPath();
+            System.out.println(realPath);
+            // 文件输入流
+            FileInputStream is = new FileInputStream(new File(realPath));
+            System.out.println(is);
+            response.setHeader("content-disposition", openStyle + "; filename = " + URLEncoder.encode(file.getFileName(), "UTF-8"));
+            // 响应response输出流
+            ServletOutputStream os = response.getOutputStream();
+            // 文件拷贝
+            IOUtils.copy(is, os);
+            IOUtils.closeQuietly(is);
+            IOUtils.closeQuietly(os);
+        } catch (FileNotFoundException | UnsupportedEncodingException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        // 更新下载次数
+        if(openStyle.equals("attachment")){
+            file.setDownloadCounts(file.getDownloadCounts() + 1);
+            userFileService.update(file);
+        }
+    }
 }

@@ -5,6 +5,7 @@ import com.oeong.entity.UserFile;
 import com.oeong.service.UserFileService;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
+import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.ResourceUtils;
@@ -101,10 +102,10 @@ public class FileController {
     }
 
     /**
+     * @param id       : 文件id
+     * @param response :
      * @Author: Hongchenglong
      * @Date: 2021/6/23 14:01
-     * @param id : 文件id
-     * @param response :
      * @Decription: 文件下载
      */
     @GetMapping("/download/{id}")
@@ -115,10 +116,10 @@ public class FileController {
     }
 
     /**
-     * @Author: Hongchenglong
-     * @Date: 2021/6/23 14:05
      * @param id:
      * @param response:
+     * @Author: Hongchenglong
+     * @Date: 2021/6/23 14:05
      * @Decription: 文件预览
      */
     @GetMapping("/preview/{id}")
@@ -130,6 +131,7 @@ public class FileController {
 
     public void getFile(String openStyle, Integer id, HttpServletResponse response) {
         UserFile file = userFileService.queryByUserFileId(id);
+        System.out.println("==============getFile=================" + file);
         try {
             // 文件路径
             System.out.println("realPath: ");
@@ -137,9 +139,9 @@ public class FileController {
             System.out.println(realPath);
             // 文件输入流
             FileInputStream is = new FileInputStream(new File(realPath));
-            System.out.println(is);
+            // 附件下载
             response.setHeader("content-disposition", openStyle + "; filename = " + URLEncoder.encode(file.getFileName(), "UTF-8"));
-            // 响应response输出流
+            // 响应输出流
             ServletOutputStream os = response.getOutputStream();
             // 文件拷贝
             IOUtils.copy(is, os);
@@ -151,9 +153,32 @@ public class FileController {
             e.printStackTrace();
         }
         // 更新下载次数
-        if(openStyle.equals("attachment")){
+        if (openStyle.equals("attachment")) {
             file.setDownloadCounts(file.getDownloadCounts() + 1);
             userFileService.update(file);
         }
+    }
+
+    @GetMapping("/delete/{id}")
+    @ResponseBody // ！！！忘记加@ResponseBody注解，返回的页面模板，报错template might not exist
+    public Map<String, Object> delete(@PathVariable("id") Integer id) {
+        Map<String, Object> map = new HashMap<>();
+        UserFile userFile = userFileService.queryByUserFileId(id);
+        try {
+            String realPath = ResourceUtils.getURL("classpath:").getPath() + userFile.getPath();
+            System.out.println("realPath: " + realPath);
+            File file = new File(realPath);
+            if (file.exists()) {
+                file.delete();
+            }
+            userFileService.delete(id);
+            map.put("code", 0);
+            map.put("msg", "删除成功");
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            map.put("code", -1);
+            map.put("msg", "删除失败");
+        }
+        return map;
     }
 }

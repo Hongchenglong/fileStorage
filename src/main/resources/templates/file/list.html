@@ -97,6 +97,33 @@
                 obj.update({
                     "downloadCounts": data.downloadCounts + 1
                 })
+            } else if (obj.event === "preview") {
+                // window.open("/fileStorage/file/preview/" + data.id);
+                layer.open({
+                    type: 2,
+                    skin: 'layui-layer-demo', //样式类名
+                    title: '文件预览',
+                    closeBtn: 1, //显示关闭按钮
+                    anim: 2,
+                    area: ['893px', '600px'],
+                    shadeClose: true, //开启遮罩关闭
+                    content: '/fileStorage/file/preview/' + data.id
+                });
+            } else if (obj.event === "delete") {
+                layer.confirm('真的删除文件吗？', function (index) {
+                    $.ajax({
+                        url: "/fileStorage/file/delete/" + data.id,
+                        type: "Get",
+                        success: function (res) {
+                            layer.msg(res.msg);
+                            obj.del();
+                        },
+                        error: function (res) {
+                            $.message.alert('msg', res.msg);
+                        }
+                    });
+                    layer.close(index);
+                });
             }
         })
     })

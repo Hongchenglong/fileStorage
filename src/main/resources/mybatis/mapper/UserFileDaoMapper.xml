@@ -28,10 +28,10 @@
 <!--    <update id="update" parameterType="UserFile">-->
 <!--        update t_files set download_counts=#{downloadCounts} where id=#{id};-->
 <!--    </update>-->
-<!--    &lt;!&ndash;根据UserFileId删除文件&ndash;&gt;-->
-<!--    <delete id="delete" parameterType="Integer">-->
-<!--        delete from t_files where id=#{id};-->
-<!--    </delete>-->
+    <!--根据UserFileId删除文件-->
+    <delete id="delete" parameterType="Integer">
+        delete from t_files where id=#{id};
+    </delete>
     <!--查询用户的文件数目-->
     <select id="queryFileCounts" parameterType="Integer" resultType="Integer">
         select count(*) from t_files where user_id=#{id};
